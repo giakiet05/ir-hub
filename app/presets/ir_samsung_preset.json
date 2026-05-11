@@ -1,0 +1,301 @@
+{
+    "address": 7,
+    "items": [
+        {
+            "command": 11,
+            "action": "volume",
+            "repeatable": true,
+            "params": {
+                "delta": -1
+            }
+        },
+        {
+            "command": 7,
+            "action": "volume",
+            "repeatable": true,
+            "params": {
+                "delta": 1
+            }
+        },
+        {
+            "command": 15,
+            "action": "mute",
+            "repeatable": false,
+            "params": {}
+        },
+        {
+            "command": 104,
+            "action": "mouse_click",
+            "repeatable": false,
+            "params": {
+                "button": "left",
+                "count": 1
+            }
+        },
+        {
+            "command": 31,
+            "action": "mouse_click",
+            "repeatable": false,
+            "params": {
+                "button": "right",
+                "count": 1
+            }
+        },
+             {
+            "command": 75,
+            "action": "mouse_click",
+            "repeatable": false,
+            "params": {
+                "button": "middle",
+                "count": 1
+            }
+        },
+        {
+            "command": 96,
+            "action": "mouse_move",
+            "repeatable": true,
+            "params": {
+                "dx": 0,
+                "dy": -30
+            }
+        },
+        {
+            "command": 97,
+            "action": "mouse_move",
+            "repeatable": true,
+            "params": {
+                "dx": 0,
+                "dy": 30
+            }
+        },
+        {
+            "command": 101,
+            "action": "mouse_move",
+            "repeatable": true,
+            "params": {
+                "dx": -30,
+                "dy": 0
+            }
+        },
+        {
+            "command": 98,
+            "action": "mouse_move",
+            "repeatable": true,
+            "params": {
+                "dx": 30,
+                "dy": 0
+            }
+        },
+        {
+            "command": 18,
+            "action": "mouse_scroll",
+            "repeatable": true,
+            "params": {
+                "direction": "vertical",
+                "amount": 1
+            }
+        },
+        {
+            "command": 16,
+            "action": "mouse_scroll",
+            "repeatable": true,
+            "params": {
+                "direction": "vertical",
+                "amount": -1
+            }
+        },
+        {
+            "command": 0,
+            "action": "run_command",
+            "repeatable": false,
+            "params": {
+                "command": "brave",
+                "args": []
+            }
+        },
+        {
+            "command": 121,
+            "action": "play_pause",
+            "repeatable": false,
+            "params": {}
+        },
+        {
+            "command": 79,
+            "action": "next_track",
+            "repeatable": false,
+            "params": {}
+        },
+        {
+            "command": 26,
+            "action": "previous_track",
+            "repeatable": false,
+            "params": {}
+        },
+        {
+            "command": 0,
+            "action": "print_screen",
+            "repeatable": false,
+            "params": {}
+        },
+        {
+            "command": 88,
+            "action": "keyboard_shortcut",
+            "repeatable": false,
+            "params": {
+                "keys": ["enter"]
+            }
+        },
+        {
+            "command": 45,
+            "action": "keyboard_shortcut",
+            "repeatable": false,
+            "params": {
+                "keys": ["escape"]
+            }
+        },
+        {
+            "command": 5,
+            "action": "keyboard_shortcut",
+            "repeatable": true,
+            "params": {
+                "keys": ["up"]
+            }
+        },
+        {
+            "command": 13,
+            "action": "keyboard_shortcut",
+            "repeatable": true,
+            "params": {
+                "keys": ["down"]
+            }
+        },
+        {
+            "command": 8,
+            "action": "keyboard_shortcut",
+            "repeatable": true,
+            "params": {
+                "keys": ["left"]
+            }
+        },
+        {
+            "command": 10,
+            "action": "keyboard_shortcut",
+            "repeatable": true,
+            "params": {
+                "keys": ["right"]
+            }
+        },
+          {
+            "command": 0,
+            "action": "keyboard_shortcut",
+            "repeatable": false,
+            "params": {
+                "keys": ["ctrl", "space"]
+            }
+        },
+        {
+            "command": 107,
+            "action": "keyboard_shortcut",
+            "repeatable": false,
+            "params": {
+                "keys": ["f"]
+            }
+        },
+        {
+            "command": 4,
+            "action": "keyboard_shortcut",
+            "repeatable": true,
+            "params": {
+                "keys": ["page_up"]
+            }
+        },
+        {
+            "command": 12,
+            "action": "keyboard_shortcut",
+            "repeatable": true,
+            "params": {
+                "keys": ["page_down"]
+            }
+        },
+        {
+            "command": 6,
+            "action": "keyboard_shortcut",
+            "repeatable": false,
+            "params": {
+                "keys": ["ctrl", "home"]
+            }
+        },
+        {
+            "command": 19,
+            "action": "keyboard_shortcut",
+            "repeatable": true,
+            "params": {
+                "keys": ["tab"]
+            }
+        },
+        {
+            "command": 44,
+            "action": "keyboard_shortcut",
+            "repeatable": true,
+            "params": {
+                "keys": ["shift", "tab"]
+            }
+        },
+        {
+            "command": 14,
+            "action": "keyboard_shortcut",
+            "repeatable": false,
+            "params": {
+                "keys": ["ctrl", "end"]
+            }
+        }, 
+        {
+            "command": 9,
+            "action": "keyboard_shortcut",
+            "repeatable": true,
+            "params": {
+                "keys": ["space"]
+            }
+        },
+        {
+            "command": 2,
+            "action": "run_command",
+            "repeatable": false,
+            "hold_duration": 3000,
+            "params": {
+                "command": "systemctl",
+                "args": ["poweroff"]
+            }
+        },
+        {
+            "command": 184,
+            "action": "run_command",
+            "repeatable": false,
+            "hold_duration": 3000,
+            "params": {
+                "command": "systemctl",
+                "args": ["reboot"]
+            }
+        },
+        {
+            "command": 1,
+            "action": "run_command",
+            "repeatable": false,
+            "hold_duration": 3000,
+            "params": {
+                "command": "systemctl",
+                "args": ["suspend"]
+            }
+        },
+        {
+            "command": 17,
+            "action": "run_command",
+            "repeatable": false,
+            "hold_duration": 3000,
+            "params": {
+                "command": "gnome-screenshot"
+            }
+        }
+
+    ]
+}

@@ -1,0 +1,10 @@
+.env
+.env.*
+.log
+.txt
+node_modules
+.claude
+.copilot
+.gemini
+app/build
+.idea
