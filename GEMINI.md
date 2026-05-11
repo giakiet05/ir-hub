@@ -1,36 +1,33 @@
-# Project: Desk Station (tên cũ: control-hub)
+# Project: IR-Hub
 
 ## 1. Mục tiêu dự án
-Tạo một thiết bị phần cứng cắm trực tiếp vào máy tính qua cổng USB (Type-C) để làm một trạm điều khiển/hiển thị đa năng trên bàn làm việc.
-- **Tính năng hiện tại:** Nhận tín hiệu hồng ngoại (IR) từ remote để điều khiển media, âm lượng, chuột trên PC.
-- **Tính năng mở rộng (tương lai):** Đo nhiệt độ, độ ẩm phòng (DHT22/BME280), hiển thị thông số, và bất cứ module nào có thể cắm thêm vào vi điều khiển.
-- **Giao diện:** Một ứng dụng Desktop trên Linux (GNOME) có thể chạy ngầm dưới System Tray (taskbar), hiển thị thông số môi trường trên icon, và có giao diện (Dashboard) để map nút điều khiển IR thay vì hardcode.
+Tạo một thiết bị phần cứng (RP2040 Zero) cắm vào máy tính để nhận tín hiệu hồng ngoại (IR) và điều khiển máy tính (media, âm lượng, chuột) thông qua ứng dụng Go chạy ngầm. Dự án tập trung vào sự tối giản, ổn định và hiệu năng cao.
 
 ## 2. Kiến trúc hệ thống
-Dự án được chia làm 2 thành phần chính, giao tiếp với nhau qua cổng Serial (USB Native hoặc UART):
+Gồm 2 phần giao tiếp qua Serial (JSON format):
 
-### A. `firmware/` (Mã nguồn Vi điều khiển)
-- **Phần cứng:** Hiện tại dùng ESP32 Dev Board, nhưng sẽ sớm chuyển sang **RP2040 Zero** (nhỏ gọn, hỗ trợ USB Native). Nguồn lấy trực tiếp từ cáp USB PC.
-- **Nền tảng:** PlatformIO (C/C++).
-- **Nhiệm vụ:** Đọc tín hiệu từ các cảm biến (mắt thu IR chân 13, cảm biến nhiệt độ...), đóng gói thành định dạng chuẩn (ưu tiên JSON trong tương lai, hiện tại là `IR_CODE:0x...`) và gửi lên PC qua Serial.
+### A. `firmware/` (RP2040 Zero)
+- **Phần cứng:** RP2040 Zero. Chân IR: GPIO 29. LED trạng thái: GPIO 16 (WS2812). Nút bấm toggle LED: GPIO 8.
+- **Nền tảng:** PlatformIO (Arduino framework, Earle Philhower core).
+- **Nhiệm vụ:** Đọc mã IR, gửi payload JSON (`raw_code`, `address`, `command`, `is_repeat`) lên PC. Quản lý LED trạng thái local.
 
-### B. `app/` (Ứng dụng Desktop chạy trên Linux)
-- **Nền tảng:** Go + framework **Wails** (Backend Go, Frontend Web dùng Vanilla TypeScript).
-- **Backend (Go):**
-  - Chạy ngầm, liên tục mở cổng Serial (`/dev/ttyUSB0` hoặc `ttyACM0`) để nhận data từ MCU.
-  - Xử lý giả lập bàn phím và chuột ở mức OS bằng thư viện `uinput` (để vượt qua các hạn chế bảo mật của Wayland/GNOME).
-  - Quản lý logic Tray Icon (System Tray) bằng tính năng native của Wails, cho phép app chạy ngầm khi đóng cửa sổ.
-- **Frontend (Web/TS):**
-  - Cung cấp giao diện đồ họa (Dashboard) mượt mà để hiển thị nhiệt độ, độ ẩm.
-  - Cung cấp giao diện (Settings) để người dùng bấm remote, bắt mã HEX, và map vào các phím tắt tùy ý (lưu xuống file JSON config của backend).
+### B. `app/` (Go Background Service)
+- **Nhiệm vụ:**
+  - Kết nối Serial với MCU (hỗ trợ Auto-reconnect).
+  - Parse mã IR và map với các hành động (Actions) được định nghĩa trong file JSON preset.
+  - Giả lập bàn phím/chuột qua `uinput` (tương thích Linux/Wayland).
+  - Tự động load lại preset khi file JSON thay đổi (Hot-reload).
+- **Cấu hình:** Sử dụng biến môi trường (`.env`):
+  - `BY_ID_PATH`: Đường dẫn serial device.
+  - `BAUD_RATE`: Tốc độ serial (thường là 115200).
+  - `PRESET_DIR`: Thư mục chứa các file JSON mapping.
 
-## 3. Tình trạng hiện tại (Status)
-- Đã cấu trúc lại thư mục thành `app/` và `firmware/`.
-- Đã khởi tạo thành công Wails project (template `vanilla-ts`) bên trong thư mục `app/`.
-- File code Go cũ thực hiện nhiệm vụ đọc Serial và uinput đang được lưu trữ tạm tại `app/old_main.go` chờ được tích hợp vào logic Backend của Wails (`app/app.go`).
+## 3. Trạng thái hiện tại
+- Đã tối giản hóa hoàn toàn: Loại bỏ Wails (GUI), Event Bus rườm rà.
+- Hệ thống chạy cực nhẹ, kết nối trực tiếp từ Serial Transport sang Handler.
+- Hỗ trợ xử lý Signal (SIGINT, SIGTERM) để tắt app an toàn.
 
-## 4. Kế hoạch tiếp theo (Roadmap)
-1. Bứng logic đọc Serial và `uinput` từ `app/old_main.go` vào Backend của Wails (`app.go`).
-2. Cấu hình Wails để hỗ trợ System Tray (ẩn/hiện cửa sổ thay vì tắt hẳn).
-3. Refactor lại code C++ và Go để chuẩn hóa chuỗi giao tiếp qua Serial thành JSON (chuẩn bị đón cảm biến nhiệt độ).
-4. Xây dựng giao diện Frontend map nút.
+## 4. Hướng dẫn vận hành
+- Build app: `cd app && go build -o ir-hub main.go`
+- Chạy qua Systemd: Tạo service file trỏ vào file thực thi và thư mục làm việc chứa `.env`.
+- Log: Xem qua `journalctl -u ir-hub -f`.

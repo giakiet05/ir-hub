@@ -7,7 +7,9 @@ import (
 	"app/internal/serial"
 	"context"
 	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 
 	"github.com/bendahl/uinput"
 	"github.com/joho/godotenv"
@@ -16,12 +18,17 @@ import (
 func main() {
 	_ = godotenv.Load()
 
+	// Set up signal handling to gracefully shut down the application
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
 	byIdPath := os.Getenv("BY_ID_PATH")
 	baudRateStr := os.Getenv("BAUD_RATE")
-	baudRate, err := strconv.Atoi(baudRateStr)
+	baudRate, _ := strconv.Atoi(baudRateStr)
 
-	if err != nil {
-		panic("BAUD_RATE must be a valid integer")
+	presetDir := os.Getenv("PRESET_DIR")
+	if presetDir == "" {
+		presetDir = "presets"
 	}
 
 	if byIdPath == "" || baudRate == 0 {
@@ -31,13 +38,13 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	keyboard, err := uinput.CreateKeyboard("/dev/uinput", []byte("desk-station"))
+	keyboard, err := uinput.CreateKeyboard("/dev/uinput", []byte("ir-hub-keyboard"))
 	if err != nil {
 		panic(err)
 	}
 	defer keyboard.Close()
 
-	mouse, err := uinput.CreateMouse("/dev/uinput", []byte("desk-station-mouse"))
+	mouse, err := uinput.CreateMouse("/dev/uinput", []byte("ir-hub-mouse"))
 	if err != nil {
 		panic(err)
 	}
@@ -50,16 +57,19 @@ func main() {
 
 	handler.RegisterDefaultActions(irHandler)
 
-	presetDir := "presets"
 	newKeyActionMap, err := handler.ParsePresetDir(presetDir)
 	if err != nil {
-		panic(err)
+		logger.Error("Failed to parse initial preset directory", "error", err, "path", presetDir)
+	} else {
+		irHandler.ReloadKeyActions(newKeyActionMap)
 	}
-	irHandler.ReloadKeyActions(newKeyActionMap)
 
 	config.WatchPresetDir(presetDir, irHandler, logger)
 
 	serial.StartTransport(ctx, byIdPath, baudRate, irHandler.Handle, logger)
 
-	select {}
+	// Wait for a termination signal to gracefully shut down the application
+	sig := <-sigChan
+	logger.Info("Received signal, Shutting down...", "signal", sig)
+	cancel()
 }

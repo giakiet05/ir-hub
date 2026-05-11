@@ -1,5 +1,4 @@
 .env
-.env.*
 .log
 .txt
 node_modules
